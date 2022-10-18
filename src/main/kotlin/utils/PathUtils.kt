@@ -1,6 +1,6 @@
 package utils
 
-object MiscUtils
+object PathUtils
 {
     /**
      * 获取路径字符串中目录路径部分

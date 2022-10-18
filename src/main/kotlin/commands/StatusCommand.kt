@@ -24,6 +24,8 @@ class StatusCommand(
         val diff = DirectoryDiff()
         val hasDiff = diff.compare(existing = e.files, contrast = c.files)
 
+        println("当前版本号: ${newestVersionFile.content}")
+
         if (hasDiff)
         {
             for (f in diff.oldFiles)

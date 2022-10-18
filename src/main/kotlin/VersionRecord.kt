@@ -7,21 +7,7 @@ class VersionRecord
     val newFiles: MutableSet<String> = mutableSetOf()
     val oldFolders: MutableSet<String> = mutableSetOf()
     val newFolders: MutableSet<String> = mutableSetOf()
-
-//    fun apply(diff: VersionRecord)
-//    {
-//        newFiles.removeIf { it in diff.oldFiles }
-//        oldFiles.addAll(diff.oldFiles)
-//
-//        oldFiles.removeIf { it in diff.newFiles }
-//        newFiles.addAll(diff.newFiles)
-//
-//        newFolders.removeIf { it in diff.oldFolders }
-//        oldFolders.addAll(diff.oldFolders)
-//
-//        oldFolders.removeIf { it in diff.newFolders }
-//        newFolders.addAll(diff.newFolders)
-//    }
+    val newFilesLengthes: MutableMap<String, Long> = mutableMapOf()
 
     fun serializeToJson(): JSONObject
     {
@@ -31,6 +17,7 @@ class VersionRecord
         json.put("new_files", JSONArray(newFiles))
         json.put("old_folders", JSONArray(oldFolders))
         json.put("new_folders", JSONArray(newFolders))
+        json.put("new_files_lengthes", JSONObject(newFilesLengthes))
 
         return json
     }

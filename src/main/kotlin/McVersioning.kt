@@ -1,4 +1,4 @@
-import commands.CommitCommand
+import commands.RecordCommand
 import commands.RevertCommand
 import commands.StatusCommand
 import utils.EnvironmentUtils
@@ -12,7 +12,7 @@ object McVersioning
     @JvmStatic
     fun main(args: Array<String>)
     {
-        val workdir = if (EnvironmentUtils.isPackaged) EnvironmentUtils.jarFile.parent else File2("testdir")
+        val workdir = if (EnvironmentUtils.isPackaged) File2(System.getProperty("user.dir")) else File2("testdir")
         val clientDir = workdir + "client"
         val versionsDir = workdir + "public"
         val snapshotDir = workdir + "public/snapshot"
@@ -29,22 +29,23 @@ object McVersioning
         val arg1 = if (args.size > 1) args[1] else null
         when(arg0)
         {
-            "commit" -> {
+            "record" -> {
                 if (arg1 == null)
                 {
-                    println("请输入一个版本号（版本号不需要以v开头）")
+                    println("请输入一个版本号（版本号不需要以v开头），当前版本号: ${newestVersionFile.content}")
                     exitProcess(1)
                 }
 
-                val commit = CommitCommand(clientDir, versionsDir, snapshotDir, snapshotFile, versionsFile, newestVersionFile)
+                val commit = RecordCommand(clientDir, versionsDir, snapshotDir, snapshotFile, versionsFile, newestVersionFile)
 
                 try {
-                    commit.commit(arg1)
+                    commit.record(arg1)
                 } catch (e: InvalidNameException) {
                     println("版本号 $arg1 已经存在，不能重复创建")
                     exitProcess(1)
                 } catch (e: OperationNotSupportedException) {
-                    println("没有任何文件修改，不需要创建新版本")
+
+                    println("没有任何文件修改，不需要创建新版本（当前版本号: ${newestVersionFile.content}）")
                     exitProcess(1)
                 }
 
@@ -62,7 +63,7 @@ object McVersioning
             }
 
             else -> {
-                println("请输入正确的参数：[commit, revert, status]")
+                println("请输入正确的参数：[record, revert, status]")
                 exitProcess(1)
             }
         }

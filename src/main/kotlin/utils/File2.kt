@@ -6,8 +6,6 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.nio.file.Paths
-import java.security.MessageDigest
-import java.util.zip.CRC32
 import kotlin.io.path.pathString
 
 class File2 : Iterable<File2>
@@ -36,8 +34,6 @@ class File2 : Iterable<File2>
     val parent: File2 get() = File2(file.parent)
 
     fun mkdirs() = file.mkdirs()
-
-    fun makeParentDirs() = parent.mkdirs()
 
     fun rename(newName: String) = file.renameTo(File(newName))
 
@@ -82,7 +78,7 @@ class File2 : Iterable<File2>
             return file.length()
         }
 
-    val modified: Long
+    var modified: Long
         get() {
             if(!exists)
                 throw FileNotFoundException(path)
@@ -90,27 +86,15 @@ class File2 : Iterable<File2>
                 throw FileNotFoundException("is not a file: $path")
             return file.lastModified()
         }
-
-    val files: List<File2> get() = file.listFiles().map { File2(it) }
-
-    @get:JvmName("isDirty")
-    val isDirty: Boolean
-        get() {
+        set(value) {
             if(!exists)
                 throw FileNotFoundException(path)
-            return if(isFile) length==0L else files.isEmpty()
+            if(isDirectory)
+                throw FileNotFoundException("is not a file: $path")
+            file.setLastModified(value)
         }
 
-    fun clear()
-    {
-        if(!exists)
-            return
-        if(isDirectory)
-            for (f in files)
-                f.delete()
-        else
-            content = ""
-    }
+    val files: List<File2> get() = file.listFiles().map { File2(it) }
 
     fun delete()
     {
@@ -124,13 +108,13 @@ class File2 : Iterable<File2>
 
     fun copy(target: File2)
     {
-        file.copyRecursively(target.file, overwrite = true)
-    }
+        if(!exists)
+            throw FileNotFoundException(path)
+        if(isDirectory)
+            throw FileNotFoundException("is not a file: $path")
 
-    fun move(target: File2)
-    {
-        copy(target)
-        target.delete()
+        file.copyTo(target.file, overwrite = true)
+        target.modified = modified
     }
 
     val path: String get() = platformPath.replace("\\", "/")

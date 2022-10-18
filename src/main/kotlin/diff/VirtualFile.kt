@@ -99,8 +99,8 @@ class VirtualFile : ComparableFile
             json.put("modified", modified)
         } else {
             val files = JSONArray()
-            for (child in files)
-                files.put(toJsonObject())
+            for (child in this.files)
+                files.put(child.toJsonObject())
             json.put("files", files)
         }
 

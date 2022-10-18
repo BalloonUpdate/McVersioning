@@ -7,11 +7,11 @@ import diff.VirtualFile
 import org.json.JSONArray
 import utils.File2
 import utils.HashUtils
-import utils.MiscUtils
+import utils.PathUtils
 import javax.naming.InvalidNameException
 import javax.naming.OperationNotSupportedException
 
-class CommitCommand(
+class RecordCommand(
     private val clientDir: File2,
     private val versionsDir: File2,
     private val snapshotDir: File2,
@@ -19,7 +19,7 @@ class CommitCommand(
     private val versionsFile: File2,
     private val newestVersionFile: File2,
 ) {
-    fun commit(versionName: String)
+    fun record(versionName: String)
     {
         val versionRecordFile = versionsDir + "v-$versionName.json"
         val versionsFileContent = versionsFile.content
@@ -40,18 +40,21 @@ class CommitCommand(
         // 更新缓存
         for (f in diff.oldFiles)
         {
+            println("旧文件: $f")
             virual.removeFile(f)
         }
 
         for (f in diff.oldFolders)
         {
+            println("旧目录: $f")
             virual.removeFile(f)
         }
 
         for (f in diff.newFolders)
         {
-            val parent = MiscUtils.getDirPathPart(f)
-            val filename = MiscUtils.getFileNamePart(f)
+            println("新目录: $f")
+            val parent = PathUtils.getDirPathPart(f)
+            val filename = PathUtils.getFileNamePart(f)
 
             val dir = if (parent != null) virual[parent]!! else virual
             dir.files += VirtualFile(filename, mutableListOf(), dir)
@@ -59,8 +62,9 @@ class CommitCommand(
 
         for (f in diff.newFiles)
         {
-            val parent = MiscUtils.getDirPathPart(f)
-            val filename = MiscUtils.getFileNamePart(f)
+            println("新文件: $f")
+            val parent = PathUtils.getDirPathPart(f)
+            val filename = PathUtils.getFileNamePart(f)
 
             val dir = if (parent != null) virual[parent]!! else virual
             val file = clientDir + f
@@ -85,6 +89,7 @@ class CommitCommand(
         versionRecord.newFiles.addAll(diff.newFiles)
         versionRecord.oldFolders.addAll(diff.oldFolders)
         versionRecord.newFolders.addAll(diff.newFolders)
+        versionRecord.newFilesLengthes.putAll(diff.newFiles.associateWith { (clientDir + it).length })
 
         versionRecordFile.touch(versionRecord.serializeToJson().toString(4))
 
