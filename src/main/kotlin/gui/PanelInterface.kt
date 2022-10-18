@@ -1,0 +1,5 @@
+package gui
+
+interface PanelInterface {
+
+}
