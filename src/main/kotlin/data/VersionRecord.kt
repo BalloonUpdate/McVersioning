@@ -1,6 +1,11 @@
+package data
+
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * 代表一个版本文件所记录的文件差异信息
+ */
 class VersionRecord
 {
     val oldFiles: MutableSet<String> = mutableSetOf()

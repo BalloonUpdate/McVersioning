@@ -4,7 +4,6 @@ import gui.extended.SvgIcons
 import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
-import javax.swing.JCheckBox
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.UIManager
@@ -14,14 +13,11 @@ import javax.swing.tree.TreeNode
 
 class CheckBoxTreeCellRenderer : JPanel(), TreeCellRenderer
 {
-    private var check: JCheckBox
     private var label: CheckBoxTreeLabel
 
     init {
         layout = null
-        add(JCheckBox().also { check = it })
         add(CheckBoxTreeLabel().also { label = it })
-        check.background = UIManager.getColor("Tree.textBackground")
         label.foreground = UIManager.getColor("Tree.textForeground")
     }
 
@@ -38,7 +34,6 @@ class CheckBoxTreeCellRenderer : JPanel(), TreeCellRenderer
     {
         val stringValue = tree.convertValueToText(value, selected, expanded, leaf, row, hasFocus)
         isEnabled = tree.isEnabled
-        check.isSelected = (value as CheckBoxTreeNode).isSelected()
         label.font = tree.font
         label.text = stringValue
         label.setSelected(selected)
@@ -51,28 +46,25 @@ class CheckBoxTreeCellRenderer : JPanel(), TreeCellRenderer
         } else {
             setFileIcon()
         }
+
+        if (value is FileModificationNode)
+            label.isNewFile = value.isNew
+        else
+            label.isNewFile = true
+
         return this
     }
 
     override fun getPreferredSize(): Dimension
     {
-        val dCheck = check.preferredSize
-        val dLabel = label.preferredSize
-        return Dimension(dCheck.width + dLabel.width, dCheck.height.coerceAtLeast(dLabel.height))
+        val labelSize = label.preferredSize
+        return Dimension(labelSize.width, labelSize.height)
     }
 
     override fun doLayout()
     {
-        val dCheck = check.preferredSize
         val dLabel = label.preferredSize
-        var yCheck = 0
-        var yLabel = 0
-        if (dCheck.height < dLabel.height) yCheck = (dLabel.height - dCheck.height) / 2 else yLabel =
-            (dCheck.height - dLabel.height) / 2
-        check.setLocation(0, yCheck)
-        check.setBounds(0, yCheck, dCheck.width, dCheck.height)
-        label.setLocation(dCheck.width, yLabel)
-        label.setBounds(dCheck.width, yLabel, dLabel.width, dLabel.height)
+        label.setBounds(4, 4, dLabel.width, dLabel.height)
     }
 
     override fun setBackground(color: Color)

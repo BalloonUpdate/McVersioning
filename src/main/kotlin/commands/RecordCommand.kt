@@ -1,6 +1,6 @@
 package commands
 
-import VersionRecord
+import data.VersionRecord
 import diff.DirectoryDiff
 import diff.RealFile
 import diff.VirtualFile
@@ -9,11 +9,10 @@ import utils.File2
 import utils.HashUtils
 import utils.PathUtils
 import javax.naming.InvalidNameException
-import javax.naming.OperationNotSupportedException
 
 class RecordCommand(
     private val clientDir: File2,
-    private val versionsDir: File2,
+    private val publicDir: File2,
     private val snapshotDir: File2,
     private val snapshotFile: File2,
     private val versionsFile: File2,
@@ -21,7 +20,7 @@ class RecordCommand(
 ) {
     fun record(versionName: String)
     {
-        val versionRecordFile = versionsDir + "v-$versionName.json"
+        val versionRecordFile = publicDir + "v-$versionName.json"
         val versionsFileContent = versionsFile.content
         val versions = versionsFileContent.split("\n").filter { it.isNotEmpty() }
 
@@ -34,25 +33,25 @@ class RecordCommand(
         val diff = DirectoryDiff()
         val hasDiff = diff.compare(existing = virual.files, contrast = real.files)
 
-        if (!hasDiff)
-            throw OperationNotSupportedException("No any changes can be recorded.")
+//        if (!hasDiff)
+//            throw OperationNotSupportedException("No any changes can be recorded.")
 
         // 更新缓存
         for (f in diff.oldFiles)
         {
-            println("旧文件: $f")
+//            println("旧文件: $f")
             virual.removeFile(f)
         }
 
         for (f in diff.oldFolders)
         {
-            println("旧目录: $f")
+//            println("旧目录: $f")
             virual.removeFile(f)
         }
 
         for (f in diff.newFolders)
         {
-            println("新目录: $f")
+//            println("新目录: $f")
             val parent = PathUtils.getDirPathPart(f)
             val filename = PathUtils.getFileNamePart(f)
 
@@ -62,7 +61,7 @@ class RecordCommand(
 
         for (f in diff.newFiles)
         {
-            println("新文件: $f")
+//            println("新文件: $f")
             val parent = PathUtils.getDirPathPart(f)
             val filename = PathUtils.getFileNamePart(f)
 
