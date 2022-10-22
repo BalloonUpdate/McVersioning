@@ -1,10 +1,15 @@
+import commandline.CommandLine
 import gui.McVersioningGUI
+import java.awt.Desktop
 
 object McVersioning
 {
     @JvmStatic
     fun main(args: Array<String>)
     {
-        McVersioningGUI.run()
+        if (!Desktop.isDesktopSupported() || args.isNotEmpty())
+            CommandLine().main(args)
+        else
+            McVersioningGUI.run()
     }
 }
