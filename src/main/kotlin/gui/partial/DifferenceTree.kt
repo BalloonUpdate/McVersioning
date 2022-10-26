@@ -6,12 +6,16 @@ import gui.extended.checkboxtree.FileModificationNode
 import utils.File2
 import utils.PathUtils
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTree
+import javax.swing.border.CompoundBorder
+import javax.swing.border.EmptyBorder
+import javax.swing.border.LineBorder
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreePath
@@ -44,8 +48,10 @@ class DifferenceTree(val clientDir: File2) : JPanel()
         layout = BorderLayout()
 
         add(JScrollPane(treeview), BorderLayout.CENTER)
-        add(JLabel("Tips: 双击新增的文件可在资源管理器里快速定位到对应目录"), BorderLayout.SOUTH)
-
+        val tipPanel = JPanel()
+        tipPanel.border = CompoundBorder(LineBorder(Color.DARK_GRAY), EmptyBorder(2,0,2,0))
+        tipPanel.add(JLabel("Tips: 双击新增的文件可在资源管理器里快速定位到对应目录"))
+        add(tipPanel, BorderLayout.SOUTH)
 
         treeview.model = DefaultTreeModel(rootNode)
         treeview.cellRenderer = CheckBoxTreeCellRenderer()

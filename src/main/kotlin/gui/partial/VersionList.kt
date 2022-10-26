@@ -2,6 +2,7 @@ package gui.partial
 
 import utils.File2
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.DefaultListModel
@@ -9,6 +10,9 @@ import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JScrollPane
+import javax.swing.border.CompoundBorder
+import javax.swing.border.EmptyBorder
+import javax.swing.border.LineBorder
 
 /**
  * 负责显示版本号列表的UI控件
@@ -31,7 +35,10 @@ class VersionList : JPanel()
     init {
         layout = BorderLayout()
         add(JScrollPane(list), BorderLayout.CENTER)
-        add(JLabel("Tips: 双击现有的版本号可以快速填入输入框"), BorderLayout.SOUTH)
+        val tipPanel = JPanel()
+        tipPanel.border = CompoundBorder(LineBorder(Color.DARK_GRAY), EmptyBorder(2,0,2,0))
+        tipPanel.add(JLabel("Tips: 双击现有的版本号可以快速填入输入框"))
+        add(tipPanel, BorderLayout.SOUTH)
 
         list.model = model
 
