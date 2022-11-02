@@ -151,6 +151,7 @@ class CommandLine
 
         // 创建版本记录文件
         val versionRecord = VersionRecord()
+        versionRecord.changeLogs.addAll(listOf())
         versionRecord.oldFiles.addAll(diff.oldFiles)
         versionRecord.newFiles.addAll(diff.newFiles)
         versionRecord.oldFolders.addAll(diff.oldFolders)

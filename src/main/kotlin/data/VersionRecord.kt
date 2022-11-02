@@ -13,6 +13,7 @@ class VersionRecord
     val oldFolders: MutableSet<String> = mutableSetOf()
     val newFolders: MutableSet<String> = mutableSetOf()
     val newFilesLengthes: MutableMap<String, Long> = mutableMapOf()
+    var changeLogs: MutableList<String> = mutableListOf()
 
     fun serializeToJson(): JSONObject
     {
@@ -23,6 +24,7 @@ class VersionRecord
         json.put("old_folders", JSONArray(oldFolders))
         json.put("new_folders", JSONArray(newFolders))
         json.put("new_files_lengthes", JSONObject(newFilesLengthes))
+        json.put("change_logs", JSONArray(changeLogs))
 
         return json
     }

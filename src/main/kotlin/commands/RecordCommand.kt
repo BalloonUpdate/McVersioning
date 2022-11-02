@@ -18,7 +18,7 @@ class RecordCommand(
     private val versionsFile: File2,
     private val newestVersionFile: File2,
 ) {
-    fun record(versionName: String)
+    fun record(versionName: String, changelogs: String)
     {
         val versionRecordFile = publicDir + "v-$versionName.json"
         val versionsFileContent = versionsFile.content
@@ -84,6 +84,8 @@ class RecordCommand(
 
         // 创建版本记录文件
         val versionRecord = VersionRecord()
+        if (changelogs.isNotEmpty())
+            versionRecord.changeLogs.addAll(changelogs.split("\n"))
         versionRecord.oldFiles.addAll(diff.oldFiles)
         versionRecord.newFiles.addAll(diff.newFiles)
         versionRecord.oldFolders.addAll(diff.oldFolders)

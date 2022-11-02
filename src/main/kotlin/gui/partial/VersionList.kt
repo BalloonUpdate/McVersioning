@@ -2,7 +2,7 @@ package gui.partial
 
 import utils.File2
 import java.awt.BorderLayout
-import java.awt.Color
+import java.awt.GridLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.DefaultListModel
@@ -10,9 +10,7 @@ import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JScrollPane
-import javax.swing.border.CompoundBorder
-import javax.swing.border.EmptyBorder
-import javax.swing.border.LineBorder
+import javax.swing.JTextArea
 
 /**
  * 负责显示版本号列表的UI控件
@@ -29,23 +27,28 @@ class VersionList : JPanel()
      */
     val versions = mutableListOf<String>()
 
-    val list = JList<String>()
-    val model = DefaultListModel<String>()
+    val versionList = JList<String>()
+    val changelogs = JTextArea()
+
+    val modelForVersionList = DefaultListModel<String>()
 
     init {
-        layout = BorderLayout()
-        add(JScrollPane(list), BorderLayout.CENTER)
-        val tipPanel = JPanel()
-        tipPanel.border = CompoundBorder(LineBorder(Color.DARK_GRAY), EmptyBorder(2,0,2,0))
-        tipPanel.add(JLabel("Tips: 双击现有的版本号可以快速填入输入框"))
-        add(tipPanel, BorderLayout.SOUTH)
+        layout = GridLayout(1, 2)
+        add(JPanel(BorderLayout()).apply {
+            add(JScrollPane(versionList), BorderLayout.CENTER)
+            add(JLabel(" 历史版本列表"), BorderLayout.NORTH)
+        })
+        add(JPanel(BorderLayout()).apply {
+            add(JScrollPane(changelogs), BorderLayout.CENTER)
+            add(JLabel(" 版本更新日志"), BorderLayout.NORTH)
+        })
 
-        list.model = model
+        versionList.model = modelForVersionList
 
-        list.addMouseListener(object : MouseAdapter() {
+        versionList.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                if (e.clickCount == 2)
-                    onChoosingSomeVersion?.invoke(list.selectedValue)
+//                if (e.clickCount == 1)
+                    onChoosingSomeVersion?.invoke(versionList.selectedValue)
             }
         })
     }
@@ -62,9 +65,9 @@ class VersionList : JPanel()
         else
             listOf())
 
-        model.clear()
+        modelForVersionList.clear()
         for (version in versions.reversed())
-            model.addElement(version)
+            modelForVersionList.addElement(version)
     }
 
     /**
@@ -73,7 +76,7 @@ class VersionList : JPanel()
      */
     fun setPendingNewVersion(pendingVersion: String?)
     {
-        model.clear()
+        modelForVersionList.clear()
 
         val vs = if (pendingVersion != null)
             versions.filter { it.startsWith(pendingVersion) }
@@ -81,7 +84,7 @@ class VersionList : JPanel()
             versions
 
         for (version in vs.reversed())
-            model.addElement(version)
+            modelForVersionList.addElement(version)
     }
 
     /**

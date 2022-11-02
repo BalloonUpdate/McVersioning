@@ -1,6 +1,7 @@
 package gui
 
 import commands.RecordCommand
+import data.VersionRecord
 import diff.DirectoryDiff
 import diff.RealFile
 import diff.VirtualFile
@@ -9,6 +10,7 @@ import gui.extended.SwingThemeLoader
 import gui.partial.ActionBar
 import gui.partial.DifferenceTree
 import gui.partial.VersionList
+import org.json.JSONObject
 import utils.EnvironmentUtils
 import utils.File2
 import java.awt.BorderLayout
@@ -98,11 +100,12 @@ object McVersioningGUI
                     }
                 }
 
-                createNewVersion(ver)
+                createNewVersion(ver, versionList.changelogs.text.trim())
                 actionBar.setInputFieldContent("")
                 versionList.refresh(versionsFile)
 
                 JOptionPane.showMessageDialog(null, "版本 $ver 已创建", "", JOptionPane.INFORMATION_MESSAGE)
+                versionList.changelogs.text = ""
                 onfinish()
             }.start()
         }
@@ -115,10 +118,19 @@ object McVersioningGUI
 
         actionBar.onTypingNewVersion = {
             versionList.setPendingNewVersion(it)
+            versionList.changelogs.text = ""
         }
 
         versionList.onChoosingSomeVersion = {
             actionBar.setInputFieldContent(it)
+            versionList.changelogs.text = ""
+            val jsonFile = publicDir + "v-$it.json"
+            if (jsonFile.exists)
+            {
+                val json = JSONObject(jsonFile.content)
+                val logs = if (json.has("change_logs")) json.getJSONArray("change_logs").joinToString("\n").trim() else ""
+                versionList.changelogs.text = logs.ifEmpty { "(该版本没有更新记录)" }
+            }
         }
 
         actionBar.doRefreshDiff()
@@ -133,9 +145,9 @@ object McVersioningGUI
         return Pair(hasDiff, diff)
     }
 
-    fun createNewVersion(version: String)
+    fun createNewVersion(version: String, changelogs: String)
     {
         val commit = RecordCommand(clientDir, publicDir, snapshotDir, snapshotFile, versionsFile, newestVersionFile)
-        commit.record(version)
+        commit.record(version, changelogs)
     }
 }
