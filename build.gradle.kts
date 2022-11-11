@@ -21,13 +21,6 @@ repositories {
 dependencies {
     implementation("org.json:json:20220924")
     implementation(kotlin("stdlib-jdk8"))
-
-    implementation("com.formdev:flatlaf:2.5")
-    implementation("com.formdev:flatlaf-extras:2.5")
-    implementation("com.formdev:flatlaf-intellij-themes:2.5")
-
-    implementation("cn.hutool:hutool-core:5.8.8")
-    implementation("cn.hutool:hutool-system:5.8.8")
 }
 
 tasks.withType<KotlinCompile> {
